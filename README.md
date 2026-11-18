@@ -99,6 +99,9 @@ process with `resource.getrusage(RUSAGE_SELF).ru_maxrss`.
 The 0.19 s vs 0.29 s difference is a side effect of not accumulating 100 MB of bytes, not a
 benchmark claim; it is reported because it was measured.
 
+A second execution of the same script on the same host reproduced both properties: survivors
+1/1 vs 0/0, peak RSS 208,000 KB vs 17,944 KB. Raw samples: `evidence/results.replicate.json`.
+
 ### 3. A pipe-holding grandchild does not stretch the deadline
 
 Same shape but the grandchild inherits stdout: both runners returned at ~0.5 s (stdlib because it
