@@ -118,7 +118,7 @@ because it did **not** produce a difference — the observable difference is in 
 python3 -m unittest discover -s tests -t . -v
 ```
 
-20 tests, **all passing in ~3.5 s** on this host. The adversarial cases are the point:
+22 tests, **all passing in ~8.1 s** on this host. The adversarial cases are the point:
 
 - child ignores `SIGTERM` → escalated to `SIGKILL`, wall clock between `timeout+grace` and 3.5 s;
 - grandchild sleeps 60 s → no matching PID survives the deadline;
@@ -126,10 +126,13 @@ python3 -m unittest discover -s tests -t . -v
 - 2 MB stdout with `max_output=64 KiB` → exactly 64 KiB retained, first bytes `A`, last bytes `Z`,
   `stdout_bytes == 2_000_000`, `truncated == True`;
 - 1 MB on stdout and 1 MB on stderr simultaneously → no deadlock, both budgets independent;
-- CLI exit codes 3, 124 and usage error 2; binary mode; env/cwd; `stdin=/dev/null`.
+- CLI exit codes 3, 124 and usage error 2; binary mode; env/cwd; `stdin=/dev/null`;
+- 100 consecutive runs (80 normal, 20 timed out) leave `/proc/self/fd` unchanged (±2) and
+  **0 zombie children**.
 
-Independent read-only review (clone of HEAD `91137b3`): `20 tests` OK in 3.523 s, `compare.py`
-reproduced survivors 1/1 vs 0/0, and all five review items passed.
+Independent read-only review (clone of HEAD `91137b3`, before the two hygiene tests were added):
+`20 tests` OK in 3.523 s, `compare.py` reproduced survivors 1/1 vs 0/0, and all five review items
+passed.
 
 ## API
 

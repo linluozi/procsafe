@@ -157,6 +157,45 @@ class OutputBudget(unittest.TestCase):
             run(["true"], max_output=1)
 
 
+class ResourceHygiene(unittest.TestCase):
+    """A runner that leaks fds or zombies is worse than no runner."""
+
+    def _fd_count(self) -> int:
+        return len(os.listdir("/proc/self/fd"))
+
+    def _zombie_children(self) -> list[int]:
+        out = []
+        for entry in os.listdir("/proc"):
+            if not entry.isdigit():
+                continue
+            try:
+                with open(f"/proc/{entry}/stat", "rb") as fh:
+                    data = fh.read()
+            except OSError:
+                continue
+            tail = data[data.rfind(b")") + 2 :].split()
+            if len(tail) >= 2 and tail[0] == b"Z" and int(tail[1]) == os.getpid():
+                out.append(int(entry))
+        return out
+
+    def test_no_fd_leak_across_100_runs(self):
+        before = self._fd_count()
+        for _ in range(80):
+            r = run([PY, "-c", "pass"])
+            self.assertEqual(r.returncode, 0)
+        for _ in range(20):
+            r = run([PY, "-c", "import time; time.sleep(30)"], timeout=0.08, grace=0.05)
+            self.assertTrue(r.timed_out)
+        after = self._fd_count()
+        self.assertLessEqual(after, before + 2, f"fd count {before} -> {after}")
+
+    def test_no_zombies_after_timeouts(self):
+        for _ in range(20):
+            run([PY, "-c", "import time; time.sleep(30)"], timeout=0.08, grace=0.05)
+        time.sleep(0.1)
+        self.assertEqual(self._zombie_children(), [])
+
+
 class CommandLine(unittest.TestCase):
     def _cli(self, *args):
         env = dict(os.environ)
