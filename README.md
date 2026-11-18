@@ -21,10 +21,10 @@ modes show up repeatedly:
 
 1. **The deadline is a lie.** The child forks a worker; the timeout fires; the worker keeps the
    port, the file lock, or the GPU. Measured on this host: after `subprocess.run(..., timeout=0.5)`
-   killed the shell, **1 of 1 grandchildren was still alive**.
+   killed the shell, **1 grandchild per run was still alive (2/2 runs)**.
 2. **The output has no budget.** `capture_output=True` on a child that prints 100 MB costs the
    parent ~208 MB RSS. Measured here: **207,872 KB** peak RSS for stdlib vs **17,800 KB** for
-   `procsafe` at a 1 MiB window — the same 100 MB of child output, 11.7x less parent memory, and
+   `procsafe` at a 1 MiB window — the same 100 MB of child output, 11.6–11.7x less parent memory across two runs, and
    95.4x fewer retained bytes.
 
 ## Install
