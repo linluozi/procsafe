@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "procsafe"
+version = "1.0.0"
+description = "Subprocess runner with a process-group deadline, SIGTERM/SIGKILL escalation, and a fixed output budget"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "linluozi" }]
+keywords = ["subprocess", "timeout", "process-group", "output-budget"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.scripts]
+procsafe = "procsafe.__main__:main"
+
+[tool.setuptools]
+packages = ["procsafe"]
