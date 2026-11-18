@@ -24,8 +24,8 @@ modes show up repeatedly:
    killed the shell, **1 grandchild per run was still alive (2/2 runs)**.
 2. **The output has no budget.** `capture_output=True` on a child that prints 100 MB costs the
    parent ~208 MB RSS. Measured here: **207,872 KB** peak RSS for stdlib vs **17,800 KB** for
-   `procsafe` at a 1 MiB window — the same 100 MB of child output, 11.6–11.7x less parent memory across two runs, and
-   95.4x fewer retained bytes.
+   `procsafe` at a 1 MiB window — the same 100 MB of child output, 11.6–11.7x less parent memory
+   across three committed runs, and 95.4x fewer retained bytes.
 
 ## Install
 
@@ -99,8 +99,11 @@ process with `resource.getrusage(RUSAGE_SELF).ru_maxrss`.
 The 0.19 s vs 0.29 s difference is a side effect of not accumulating 100 MB of bytes, not a
 benchmark claim; it is reported because it was measured.
 
-A second execution of the same script on the same host reproduced both properties: survivors
-1/1 vs 0/0, peak RSS 208,000 KB vs 17,944 KB. Raw samples: `evidence/results.replicate.json`.
+Two further executions of the same script on the same host reproduced both properties: survivors
+1/1 vs 0/0 every time, peak RSS 208,000 KB vs 17,944 KB and 208,000 KB vs 17,824 KB. Raw samples:
+`evidence/results.replicate.json` and `evidence/results.run3.json`. An independent read-only
+verifier's fresh run measured a wider 208,512 KB vs 18,372 KB (11.3x) — still the same property,
+and disclosed here rather than quoting only the best run.
 
 ### 3. A pipe-holding grandchild does not stretch the deadline
 
@@ -124,6 +127,9 @@ python3 -m unittest discover -s tests -t . -v
   `stdout_bytes == 2_000_000`, `truncated == True`;
 - 1 MB on stdout and 1 MB on stderr simultaneously → no deadlock, both budgets independent;
 - CLI exit codes 3, 124 and usage error 2; binary mode; env/cwd; `stdin=/dev/null`.
+
+Independent read-only review (clone of HEAD `91137b3`): `20 tests` OK in 3.523 s, `compare.py`
+reproduced survivors 1/1 vs 0/0, and all five review items passed.
 
 ## API
 

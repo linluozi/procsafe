@@ -1,0 +1,62 @@
+{
+  "host": {
+    "python": "3.12.3",
+    "cpu": "AMD EPYC 7K62 48-Core Processor",
+    "kernel": "6.8.0-124-generic"
+  },
+  "orphan_pipe": {
+    "scenario": "grandchild inherits stdout pipe; deadline 0.5s",
+    "samples": [
+      {
+        "stdlib_s": 0.501,
+        "procsafe_s": 0.501
+      },
+      {
+        "stdlib_s": 0.501,
+        "procsafe_s": 0.501
+      }
+    ]
+  },
+  "orphan_alive": {
+    "scenario": "grandchild outlives the direct child; deadline 0.5s",
+    "samples": [
+      {
+        "stdlib_survivors": 1,
+        "procsafe_survivors": 0
+      },
+      {
+        "stdlib_survivors": 1,
+        "procsafe_survivors": 0
+      }
+    ]
+  },
+  "memory": {
+    "scenario": "child writes 100 MB to stdout",
+    "samples": [
+      {
+        "stdlib": {
+          "elapsed_s": 0.218,
+          "parent_maxrss_kb": 208000,
+          "kept_bytes": 100000000
+        },
+        "procsafe": {
+          "elapsed_s": 0.171,
+          "parent_maxrss_kb": 17824,
+          "kept_bytes": 1048576
+        }
+      },
+      {
+        "stdlib": {
+          "elapsed_s": 0.22,
+          "parent_maxrss_kb": 207872,
+          "kept_bytes": 100000000
+        },
+        "procsafe": {
+          "elapsed_s": 0.169,
+          "parent_maxrss_kb": 17828,
+          "kept_bytes": 1048576
+        }
+      }
+    ]
+  }
+}
