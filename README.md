@@ -138,6 +138,16 @@ run(argv, *, timeout=None, grace=1.0, max_output=1 << 20,
 - `text=False` returns `bytes` instead of decoded `str`.
 - `max_output` is per stream, so total retained bytes are at most `2 * max_output`.
 
+## Packaging
+
+```bash
+python3 -m pip wheel . --no-deps -w dist/
+```
+
+Produces `procsafe-1.0.0-py3-none-any.whl` (~10.8 KB); it was installed into a fresh venv and the
+console script returned the child's exit status (5) there. The package is **not** published to
+PyPI; this repository is the distribution.
+
 ## Limitations
 
 - **Not a security sandbox.** It bounds time and captured bytes, not CPU, file writes, or network.
