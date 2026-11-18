@@ -181,8 +181,14 @@ class CommandLine(unittest.TestCase):
         self.assertEqual(p.returncode, 2)
 
     def test_group_members_helper(self):
-        # our own process group is visible and contains us
-        self.assertIn(os.getpid(), group_members(os.getpgid(0)))
+        # a fresh session leader has pgid == pid; /proc parsing must agree
+        child = subprocess.Popen([PY, "-c", "import time; time.sleep(30)"], start_new_session=True)
+        try:
+            self.assertEqual(os.getpgid(child.pid), child.pid)
+            self.assertIn(child.pid, group_members(child.pid))
+        finally:
+            child.kill()
+            child.wait()
 
 
 if __name__ == "__main__":

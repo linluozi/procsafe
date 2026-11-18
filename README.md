@@ -112,7 +112,7 @@ because it did **not** produce a difference — the observable difference is in 
 python3 -m unittest discover -s tests -t . -v
 ```
 
-20 tests, **all passing in 3.48 s** on this host. The adversarial cases are the point:
+20 tests, **all passing in ~3.5 s** on this host. The adversarial cases are the point:
 
 - child ignores `SIGTERM` → escalated to `SIGKILL`, wall clock between `timeout+grace` and 3.5 s;
 - grandchild sleeps 60 s → no matching PID survives the deadline;

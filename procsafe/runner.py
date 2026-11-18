@@ -127,11 +127,12 @@ def group_members(pgid: int) -> list[int]:
                 data = fh.read()
         except OSError:
             continue
-        # comm may contain spaces/parens; fields after the last ')' are stable
+        # comm may contain spaces/parens; fields after the last ')' are stable:
+        # state ppid pgrp session ...
         tail = data[data.rfind(b")") + 2 :].split()
-        if len(tail) < 2:
+        if len(tail) < 3:
             continue
-        state, pgrp = tail[0], tail[1]
+        state, pgrp = tail[0], tail[2]
         if state == b"Z":
             continue
         try:
